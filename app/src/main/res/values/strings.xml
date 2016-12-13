@@ -10,5 +10,13 @@
   <string name="input_hint">FB</string>
   <string name="input_prefill"></string>
   <string name="no_internet_connection">No internet connection</string>
-  <string name="no_stock">You do not have stock</string>
+  <string name="no_stock">You do not have added stock</string>
+  <string name="empty_stock">You do not have stock</string>
+  <string name="last_updated">Last updated</string>
+
+  <!--Preference-->
+  <string name="pref_stock_last_update">lastUpdate</string>
+  <string name="pref_main">STOCK_HAWK</string>
+    <string name="not_yet_updated">Not yet updated</string>
+    <!--/Preference-->
 </resources>

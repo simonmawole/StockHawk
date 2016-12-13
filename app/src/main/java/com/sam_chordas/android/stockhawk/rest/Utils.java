@@ -33,18 +33,14 @@ public class Utils {
                 if (count == 1) {
                     jsonObject = jsonObject.getJSONObject("results")
                             .getJSONObject("quote");
-                    if(!isJsonDataNull(jsonObject)) {
-                        batchOperations.add(buildBatchOperation(jsonObject));
-                    }
+                    batchOperations.add(buildBatchOperation(jsonObject));
                 } else {
                     resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
                     if (resultsArray != null && resultsArray.length() != 0) {
                         for (int i = 0; i < resultsArray.length(); i++) {
                             jsonObject = resultsArray.getJSONObject(i);
-                            if(!isJsonDataNull(jsonObject)) {
-                                batchOperations.add(buildBatchOperation(jsonObject));
-                            }
+                            batchOperations.add(buildBatchOperation(jsonObject));
                         }
                     }
                 }
@@ -60,7 +56,6 @@ public class Utils {
             bidPrice = String.format("%.2f", Float.parseFloat(bidPrice));
         } catch(Exception e) {
             e.printStackTrace();
-            bidPrice = "null";
         }
         return bidPrice;
     }
@@ -82,7 +77,6 @@ public class Utils {
             change = changeBuffer.toString();
         } catch(Exception e) {
             e.printStackTrace();
-            change = "null";
         }
         return change;
     }
@@ -104,19 +98,12 @@ public class Utils {
                     builder.withValue(QuoteColumns.ISUP, 1);
                 }
 
+                //Add Created At date in milliseconds so we can be able to get price overtime
+                builder.withValue(QuoteColumns.CREATED, System.currentTimeMillis());
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             return builder.build();
-    }
-
-    public static boolean isJsonDataNull(JSONObject jsonObject) {
-        if(jsonObject.isNull("Change")
-                    || jsonObject.isNull("sysmbol")
-                    || jsonObject.isNull("Bid")
-                    || jsonObject.isNull("ChangeinPercent")){
-                return true;
-        }
-        return false;
     }
 }

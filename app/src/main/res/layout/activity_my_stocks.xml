@@ -6,20 +6,58 @@
     android:layout_height="match_parent"
     >
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/recycler_view"
+  <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      />
+      android:orientation="vertical"
+      android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="16sp"
+        android:layout_marginBottom="16sp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_height="wrap_content">
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:textColor="@color/material_blue_500"
+              android:textStyle="bold"
+              android:textSize="18sp"
+              android:text="@string/last_updated"
+              />
+            <TextView
+                android:id="@+id/tvLastUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:textColor="@color/material_blue_500"
+                android:textStyle="normal"
+                android:textSize="18sp"
+                android:layout_marginLeft="8dp"
+                />
+        </LinearLayout>
 
-  <TextView
-      android:id="@+id/tvMessage"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      android:layout_margin="16dp"
-      android:text="Message here"
-      />
+      <TextView
+          android:id="@+id/tvMessage"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_weight="1"
+          android:gravity="center"
+          android:visibility="gone"
+          android:layout_margin="18dp"
+          android:text="@string/empty_stock"
+          />
+
+      <android.support.v7.widget.RecyclerView
+          android:id="@+id/rvStock"
+          android:layout_weight="1"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
+
+  </LinearLayout>
 
   <com.melnykov.fab.FloatingActionButton
       android:id="@+id/fab"
@@ -28,12 +66,14 @@
       android:layout_gravity="bottom|right"
       android:layout_margin="16dp"
       android:src="@drawable/ic_add_white_24dp"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentRight="true"
       fab:fab_colorNormal="@color/material_blue_500"
       fab:fab_colorPressed="@color/material_blue_600"
       fab:fab_colorRipple="@color/ripple"
       fab:fab_shadow="true"
       fab:fab_type="normal"
-      fab:layout_anchor="recycler_view"
       fab:layout_anchorGravity="bottom | end"
       />
 </RelativeLayout>

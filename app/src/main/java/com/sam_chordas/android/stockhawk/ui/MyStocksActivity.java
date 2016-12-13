@@ -5,9 +5,8 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -19,6 +18,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -35,6 +35,10 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.sam_chordas.android.stockhawk.util.Helpers;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -52,19 +56,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
     private Cursor mCursor;
-    boolean isConnected;
+
+    @BindView(R.id.rvStock) RecyclerView mRvStock;
+    @BindView(R.id.tvMessage) TextView mTvMessage;
+    @BindView(R.id.tvLastUpdate) TextView mTvLastUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
-        ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
         setContentView(R.layout.activity_my_stocks);
+        ButterKnife.bind(this);
+
+        mContext = MyStocksActivity.this;
 
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
@@ -73,19 +76,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         if (savedInstanceState == null) {
             // Run the initialize task service so that some stocks appear upon an empty database
             mServiceIntent.putExtra("tag", "init");
-            if (isConnected) {
+            if (Helpers.isNetworkConnected(MyStocksActivity.this)) {
                 startService(mServiceIntent);
             } else {
                 networkToast();
             }
         }
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRvStock.setLayoutManager(new LinearLayoutManager(this));
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
         mCursorAdapter = new QuoteCursorAdapter(this, null);
-        recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
+        mRvStock.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, int position) {
@@ -93,15 +95,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         // do something on item click
                     }
                 }));
-        recyclerView.setAdapter(mCursorAdapter);
+        mRvStock.setAdapter(mCursorAdapter);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.attachToRecyclerView(recyclerView);
+        fab.attachToRecyclerView(mRvStock);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnected) {
+                if (Helpers.isNetworkConnected(MyStocksActivity.this)) {
                     new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
                             .content(R.string.content_test)
                             .inputType(InputType.TYPE_CLASS_TEXT)
@@ -138,10 +140,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        mItemTouchHelper.attachToRecyclerView(mRvStock);
 
         mTitle = getTitle();
-        if (isConnected) {
+        if (Helpers.isNetworkConnected(MyStocksActivity.this)) {
             long period = 3600L;
             long flex = 10L;
             String periodicTag = "periodic";
@@ -159,6 +161,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
             // are updated.
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
+        } else {
+            networkToast();
         }
     }
 
@@ -167,6 +171,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        lastStockUpdated();
     }
 
     public void networkToast() {
@@ -213,7 +218,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         // This narrows the return to only the stocks that are most current.
         return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
                 new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
+                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP,
+                        QuoteColumns.CREATED, QuoteColumns.ISCURRENT},
                 QuoteColumns.ISCURRENT + " = ?",
                 new String[]{"1"},
                 null);
@@ -221,11 +227,41 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data.getCount() != 0) {
+        if(data.getCount() > -1) {
             mCursorAdapter.swapCursor(data);
             mCursor = data;
-        } else {
+            isStockEmpty(false);
 
+        } else { //There is no data return from database
+            if(Helpers.isNetworkConnected(MyStocksActivity.this)){
+                //There is network connection
+                isStockEmpty(true);
+            } else {
+                //There is no network connection
+                isStockEmpty(true);
+                networkToast();
+            }
+        }
+    }
+
+    public void isStockEmpty(boolean stock){
+        if(stock){
+            mTvMessage.setVisibility(View.VISIBLE);
+            mRvStock.setVisibility(View.GONE);
+        } else {
+            mTvMessage.setVisibility(View.GONE);
+            mRvStock.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void lastStockUpdated(){
+        SharedPreferences pref = getSharedPreferences(getString(R.string.pref_main), MODE_PRIVATE);
+
+        long update = pref.getLong(getString(R.string.pref_stock_last_update), 0);
+        if (update != 0){
+            mTvLastUpdate.setText(Helpers.getSimpleDateTime(update));
+        } else {
+            mTvLastUpdate.setText(R.string.not_yet_updated);
         }
     }
 

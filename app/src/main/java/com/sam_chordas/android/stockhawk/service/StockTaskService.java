@@ -4,6 +4,7 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
@@ -12,6 +13,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
@@ -126,6 +128,13 @@ public class StockTaskService extends GcmTaskService {
                         contentValues.put(QuoteColumns.ISCURRENT, 0);
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                                 null, null);
+
+                        //Update time in shared preference
+                        SharedPreferences pref = mContext.getSharedPreferences(
+                                mContext.getString(R.string.pref_main), mContext.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putLong(mContext.getString(R.string.pref_stock_last_update), System.currentTimeMillis());
+                        editor.commit();
                     }
                     ArrayList<ContentProviderOperation> list = Utils.quoteJsonToContentVals(getResponse);
                     if(list != null) {
@@ -133,6 +142,7 @@ public class StockTaskService extends GcmTaskService {
                     } else {
                         System.out.println("Error applying batch");
                     }
+
                 } catch (Exception e){//RemoteException | OperationApplicationException e) {
                     System.out.println("Error applying batch insert:"+ e);
                 }
