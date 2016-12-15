@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_change_units">تغيير وحدات</string>
+    <string name="action_example">العمل سبيل المثال</string>
+    <string name="action_settings">إعدادات</string>
+    <string name="content_test">بحث عن الأوراق المالية رمز</string>
+    <string name="empty_stock">لم يكن لدينا مخزون</string>
+    <string name="last_updated">آخر تحديث</string>
+    <string name="no_internet_connection">لا يوجد اتصال بالانترنت</string>
+    <string name="no_stock">لم يكن لديك وأضاف الأسهم</string>
+    <string name="not_yet_updated">لم يتم تحديثه بعد</string>
+    <string name="symbol_search">رمز البحث</string>
+</resources>

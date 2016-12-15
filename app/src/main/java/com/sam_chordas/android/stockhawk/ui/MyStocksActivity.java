@@ -244,6 +244,16 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mCursorAdapter.swapCursor(null);
+    }
+
+    /**
+     * Hide or Show a message if there is data or not
+     *
+     * @param stock boolean this is passed by adapter
+     * */
     public void isStockEmpty(boolean stock){
         if(stock){
             mTvMessage.setVisibility(View.VISIBLE);
@@ -254,6 +264,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         }
     }
 
+    /**
+     * Update the ui for with the last refresh of the stock data
+     * */
     public void lastStockUpdated(){
         SharedPreferences pref = getSharedPreferences(getString(R.string.pref_main), MODE_PRIVATE);
 
@@ -264,10 +277,4 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             mTvLastUpdate.setText(R.string.not_yet_updated);
         }
     }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mCursorAdapter.swapCursor(null);
-    }
-
 }
