@@ -40,6 +40,7 @@ public class QuoteProvider {
         path = Path.QUOTES + "/*",
         type = "vnd.android.cursor.item/quote",
         whereColumn = QuoteColumns.SYMBOL,
+        //limit = "12",
         pathSegment = 1
     )
     public static Uri withSymbol(String symbol){

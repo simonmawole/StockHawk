@@ -104,9 +104,9 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
                 String is_up = data.getString(INDEX_ISUP);
 
                 if (data.getInt(INDEX_ISUP) == 1){
-                    views.setTextColor(R.id.tvChange, getResources().getColor(R.color.material_green_700));
+                    views.setTextColor(R.id.tvChange, getResources().getColor(R.color.green_700));
                 } else{
-                    views.setTextColor(R.id.tvChange, getResources().getColor(R.color.material_red_700));
+                    views.setTextColor(R.id.tvChange, getResources().getColor(R.color.red_700));
                 }
                 if (Utils.showPercent){
                     views.setTextViewText(R.id.tvChange, percent_change);
@@ -117,9 +117,9 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
                 views.setTextViewText(R.id.tvBidPrice, bid_price);
 
                 final Intent intent = new Intent();
-                Uri quoteUri = QuoteProvider.Quotes.withSymbol(symbol);
-                intent.setData(quoteUri);
-                views.setOnClickFillInIntent(R.id.fl_list_item, intent);
+                //Uri quoteUri = QuoteProvider.Quotes.withSymbol(symbol);
+                //intent.setData(quoteUri);
+                views.setOnClickFillInIntent(R.id.fl_list_item, intent.putExtra("symbol", symbol));
                 return views;
             }
 

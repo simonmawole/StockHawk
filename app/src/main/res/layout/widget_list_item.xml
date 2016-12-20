@@ -3,9 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
-    android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
+    android:background="@color/white"
+    android:minHeight="51dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
@@ -16,6 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="left|center_vertical"
+        android:textColor="@color/grey_800"
         tools:text="GOOG"
         />
     <LinearLayout
@@ -30,6 +32,7 @@
           style="@style/BidPriceTextStyle"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:textColor="@color/grey_900"
           android:paddingRight="10sp"
           tools:text="1000.00"
           />

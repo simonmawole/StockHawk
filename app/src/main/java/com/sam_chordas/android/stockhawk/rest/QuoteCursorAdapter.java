@@ -90,7 +90,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder
-      implements ItemTouchHelperViewHolder, View.OnClickListener{
+      implements ItemTouchHelperViewHolder{
     public final TextView symbol;
     public final TextView bidPrice;
     public final TextView change;
@@ -100,7 +100,6 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
       symbol.setTypeface(robotoLight);
       bidPrice = (TextView) itemView.findViewById(R.id.bid_price);
       change = (TextView) itemView.findViewById(R.id.change);
-      itemView.setOnClickListener(this);
     }
 
     @Override
@@ -111,12 +110,6 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     @Override
     public void onItemClear(){
       itemView.setBackgroundColor(0);
-    }
-
-    @Override
-    public void onClick(View v) {
-      TextView tvSymbol = (TextView) v.findViewById(R.id.stock_symbol);
-      Toast.makeText(mContext, "Symbol:"+tvSymbol.getText().toString(), Toast.LENGTH_SHORT).show();
     }
 
   }

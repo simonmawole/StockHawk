@@ -2,7 +2,9 @@ package com.sam_chordas.android.stockhawk.linechart;
 
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import com.db.chart.Tools;
 import com.db.chart.model.LineSet;
 import com.db.chart.view.AxisController;
+import com.db.chart.view.ChartView;
 import com.db.chart.view.LineChartView;
 import com.db.chart.view.Tooltip;
 import com.db.chart.view.animation.Animation;
@@ -29,17 +32,19 @@ public class MyLineChart {
     private final Context mContext;
 
 
-    private final String[] mLabels = {"Jan", "Fev", "Mar", "Apr", "Jun", "May", "Jul", "Aug", "Sep"};
+    private String[] mLabels;// = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            //"11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", ""};
 
-    private final float[][] mValues = {{3.5f, 4.7f, 4.3f, 8f, 6.5f, 9.9f, 7f, 8.3f, 7.0f},
-            {4.5f, 2.5f, 2.5f, 9f, 4.5f, 9.5f, 5f, 8.3f, 1.8f}};
+    private float[] mValues;// = {1F, 4F, 0F, -2F, -1F, 1.5F, 5F, 3, 1, 2, -3.5F, -2};
 
     private Tooltip mTip;
 
 
-    public MyLineChart(Context context, LineChartView lcv) {
+    public MyLineChart(Context context, LineChartView lcv, float[] values, String[] labels) {
         mContext = context;
         mChart = lcv;
+        mValues = values;
+        mLabels = labels;
     }
 
     public void show() {
@@ -66,36 +71,30 @@ public class MyLineChart {
 
         mChart.setTooltips(mTip);
 
-        // Data
-        LineSet dataset = new LineSet(mLabels, mValues[0]);
-        dataset.setColor(Color.parseColor("#758cbb"))
-                .setFill(Color.parseColor("#2d374c"))
-                .setDotsColor(Color.parseColor("#758cbb"))
-                .setThickness(4)
-                .setDashed(new float[] {10f, 10f})
-                .beginAt(5);
+        LineSet dataset = new LineSet(mLabels, mValues);
+        dataset.setColor(mContext.getResources().getColor(R.color.grey_900))
+                .setDotsColor(mContext.getResources().getColor(R.color.blue_500))
+                .setThickness(2);
         mChart.addData(dataset);
 
-        dataset = new LineSet(mLabels, mValues[0]);
-        dataset.setColor(Color.parseColor("#b3b5bb"))
-                .setFill(Color.parseColor("#2d374c"))
-                .setDotsColor(Color.parseColor("#ffc755"))
-                .setThickness(4)
-                .endAt(6);
-        mChart.addData(dataset);
+        int maxValue = (int) getMaxValue(mValues);
+        int minValue = (int) getMinValue(mValues);
+
+        maxValue = maxValue + 2;
+        minValue = minValue - 2;
 
         // Chart
         mChart.setBorderSpacing(Tools.fromDpToPx(15))
-                .setAxisBorderValues(0, 20)
-                .setYLabels(AxisController.LabelPosition.NONE)
-                .setLabelsColor(Color.parseColor("#6a84c3"))
+                .setAxisBorderValues(minValue,maxValue)
+                .setYLabels(AxisController.LabelPosition.OUTSIDE)
+                .setLabelsColor(mContext.getResources().getColor(R.color.grey_900))
                 .setXAxis(false)
                 .setYAxis(false);
 
         Runnable chartAction = new Runnable() {
             @Override
             public void run() {
-                mTip.prepare(mChart.getEntriesArea(0).get(3), mValues[0][3]);
+                mTip.prepare(mChart.getEntriesArea(0).get(3), mValues[3]);
                 mChart.showTooltip(mTip, true);
             }
         };
@@ -105,12 +104,14 @@ public class MyLineChart {
         mChart.show(anim);
     }
 
-    public void update() {
+    public void update(float[] values, String[] labels) {
+        this.mValues = values;
+        this.mLabels = labels;
+
 
         mChart.dismissAllTooltips();
 
-        mChart.updateValues(0, mValues[0]);
-        mChart.updateValues(1, mValues[0]);
+        mChart.updateValues(0, mValues);
 
         //mChart.getChartAnimation().setEndAction(mBaseAction);
         mChart.notifyDataUpdate();
@@ -122,4 +123,39 @@ public class MyLineChart {
         mChart.dismiss(new Animation().setEasing(new BounceEase()).setEndAction(action));
     }
 
+    /**
+     * Get the max value from the array of values
+     *
+     * @param values floating array
+     * @return max the maximum value
+     * */
+    private float getMaxValue(float[] values){
+        if(values.length != 0) {
+            float max = values[0];
+            for (int i = 1; i < values.length; i++) {
+                max = Math.max(max, values[i]);
+            }
+            return max;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Get the min value from the array of values
+     *
+     * @param values floating array
+     * @return min the maximum value
+     * */
+    private float getMinValue(float[] values){
+        if(values.length != 0) {
+            float min = values[0];
+            for (int i = 1; i < values.length; i++) {
+                min = Math.min(min, values[i]);
+            }
+            return min;
+        } else {
+            return 0;
+        }
+    }
 }
