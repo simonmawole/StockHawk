@@ -18,6 +18,9 @@
   <string name="pref_stock_last_update" translatable="false">lastUpdate</string>
   <string name="pref_main" translatable="false">STOCK_HAWK</string>
     <!--/Preference-->
-  <string name="not_yet_updated" translatable="false">Not yet updated</string>
+  <string name="not_yet_updated">Not yet updated</string>
+  <string name="percent_change">Percent change</string>
+  <string name="bid_price">Bid price</string>
+  <string name="symbol">Symbol</string>
 
 </resources>

@@ -88,7 +88,7 @@ public class StockTaskService extends GcmTaskService {
                     e.printStackTrace();
                 }
             } else if (initQueryCursor != null) {
-                DatabaseUtils.dumpCursor(initQueryCursor);
+                //DatabaseUtils.dumpCursor(initQueryCursor);
                 initQueryCursor.moveToFirst();
                 for (int i = 0; i < initQueryCursor.getCount(); i++) {
                     mStoredSymbols.append("\"" +

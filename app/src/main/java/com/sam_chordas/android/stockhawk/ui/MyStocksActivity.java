@@ -61,6 +61,17 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     @BindView(R.id.tvMessage) TextView mTvMessage;
     @BindView(R.id.tvLastUpdate) TextView mTvLastUpdate;
 
+    private static final String KEY_SCROLL_POSITION = "scroll_position";
+    private static final String KEY_LAST_UPDATED = "last_updated";
+    private static final String KEY_ITEM_SELECTED = "item_selected";
+    private static final String KEY_DIALOG_OPENED = "dialog_opened";
+
+    private static boolean isDialogOpened = false;
+    private static String dialogEditTextValue = "";
+    private static int scrollPosition = 0;
+    private static String lastUpdated = "";
+    private static int itemSelected = -1; //negative for nothng selected
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -279,5 +290,16 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         } else {
             mTvLastUpdate.setText(R.string.not_yet_updated);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }

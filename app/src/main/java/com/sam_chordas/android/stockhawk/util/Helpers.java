@@ -89,11 +89,31 @@ public class Helpers {
         if(cursor.moveToFirst()) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToPosition(i);
-                data[i] = cursor.getString(cursor.getColumnIndex(QuoteColumns.CREATED));
+
+                data[i] = String.valueOf(getHoursFromMilliseconds(
+                            Long.valueOf(cursor.getString(
+                                    cursor.getColumnIndex(QuoteColumns.CREATED)))));
             }
         }
 
         return data;
+    }
+
+    /**
+     * Convert milliseconds to hours
+     *
+     * @param time time in milliseconds
+     * @return hours time in hours
+     * */
+    public static int getHoursFromMilliseconds(long time){
+        int hours = 0;
+        long timeNow = System.currentTimeMillis();
+
+        long hourInMilliSeconds = 1000 * 60 * 60; //Hour in milliseconds
+        long totalHours = (timeNow - time) / hourInMilliSeconds; //Find how many hours
+
+        hours = (int) totalHours;
+        return hours;
     }
 
 }

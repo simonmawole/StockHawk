@@ -45,12 +45,7 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
         //Set title stock symbol
         if(mSymbol != null) setTitle(mSymbol);
 
-        try {
-            //mMyLineChart = new MyLineChart(this, mLineChartView, new float[]{}, new String[]{});
-            //mMyLineChart.show();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+
     }
 
     @Override
@@ -65,8 +60,8 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
                         QuoteColumns.CREATED, QuoteColumns.ISCURRENT},
                 QuoteColumns.SYMBOL + " = ? AND "+
                 QuoteColumns.CREATED + " > ?",
-                new String[]{mSymbol, timeRange},null
-                /*" created desc limit 24"*/);
+                new String[]{mSymbol, timeRange},
+                null);
     }
 
     @Override
@@ -83,9 +78,7 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
             }
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("Data Length:"+data.getCount());
         }
-        System.out.println("Data Length:"+data.getCount());
     }
 
     @Override
@@ -96,5 +89,17 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
     public void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("symbol", mSymbol);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mSymbol = savedInstanceState.getString("symbol");
     }
 }

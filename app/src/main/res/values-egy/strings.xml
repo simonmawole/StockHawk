@@ -10,4 +10,8 @@
     <string name="no_stock">لم يكن لديك وأضاف الأسهم</string>
     <string name="not_yet_updated">لم يتم تحديثه بعد</string>
     <string name="symbol_search">رمز البحث</string>
+    <string name="add_stock">إضافة الأسهم</string>
+    <string name="bid_price">سعر</string>
+    <string name="percent_change">التغيير في المئة</string>
+    <string name="symbol">رمز</string>
 </resources>

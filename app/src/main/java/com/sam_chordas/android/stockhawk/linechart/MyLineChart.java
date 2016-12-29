@@ -50,7 +50,7 @@ public class MyLineChart {
     public void show() {
 
         // Tooltip
-        mTip = new Tooltip(mContext, R.layout.linechart_tooltip, R.id.value);
+        mTip = new Tooltip(mContext, R.layout.linechart_tooltip, R.id.change);
 
         mTip.setVerticalAlignment(Tooltip.Alignment.BOTTOM_TOP);
         mTip.setDimensions((int) Tools.fromDpToPx(58), (int) Tools.fromDpToPx(25));
@@ -80,8 +80,8 @@ public class MyLineChart {
         int maxValue = (int) getMaxValue(mValues);
         int minValue = (int) getMinValue(mValues);
 
-        maxValue = maxValue + 2;
-        minValue = minValue - 2;
+        maxValue = maxValue + 1;
+        minValue = minValue - 1;
 
         // Chart
         mChart.setBorderSpacing(Tools.fromDpToPx(15))
@@ -94,8 +94,10 @@ public class MyLineChart {
         Runnable chartAction = new Runnable() {
             @Override
             public void run() {
-                mTip.prepare(mChart.getEntriesArea(0).get(3), mValues[3]);
-                mChart.showTooltip(mTip, true);
+                if(mValues.length > 0) {
+                    mTip.prepare(mChart.getEntriesArea(0).get((mValues.length-1)), (mValues.length-1));
+                    mChart.showTooltip(mTip, true);
+                }
             }
         };
 
